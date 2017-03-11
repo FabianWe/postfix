@@ -2,7 +2,7 @@
 
 POSTFIXCONF="/postfix_conf"
 USERCONF="/postconf"
-DEFAULTCONF="/default_conf"
+DEFAULTCONF="/default_conf/postfix"
 
 # get some environment variables and set defaults if they don't exist
 : ${DB_USER:=root}
