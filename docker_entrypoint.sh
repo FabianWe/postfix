@@ -1,8 +1,15 @@
 #!/bin/bash
 
+# ignores empty results
+shopt -s nullglob
+
 POSTFIXCONF="/postfix_conf"
-USERCONF="/postconf"
-DEFAULTCONF="/default_conf/postfix"
+POSTFIXUSERCONF="/postconf"
+POSTFIXDEFAULTCONF="/default_conf/postfix"
+
+DOVECOTCONF="/dovecot_conf"
+DOVECOTUSERCONF="/doveconf"
+DOVECOTDEFAULTCONF="/default_conf/dovecot"
 
 # get some environment variables and set defaults if they don't exist
 : ${DB_USER:=root}
@@ -10,6 +17,15 @@ DEFAULTCONF="/default_conf/postfix"
 : ${DB_HOST:=mysql}
 : ${DB_NAME:=mailserver}
 : ${MESSAGE_SIZE_LIMIT:=6000000}
+
+# function to replace the placeholders in the config files, i.e. ${...}
+function repl {
+  sed -i "s/\${DB_USER}/$DB_USER/g" $1
+  sed -i "s/\${DB_PASSWORD}/$DB_PASSWORD/g" $1
+  sed -i "s/\${DB_HOST}/$DB_HOST/g" $1
+  sed -i "s/\${DB_NAME}/$DB_NAME/g" $1
+  sed -i "s/\${MESSAGE_SIZE_LIMIT}/$MESSAGE_SIZE_LIMIT/g" $1
+}
 
 ###### POSTFIX ######
 
@@ -22,25 +38,13 @@ fi
 # copy the postfix configuration
 cp -R /etc/postfix "$POSTFIXCONF"
 
-# function to replace the placeholders in the config files, i.e. {}
-function repl {
-  sed -i "s/\${DB_USER}/$DB_USER/g" $1
-  sed -i "s/\${DB_PASSWORD}/$DB_PASSWORD/g" $1
-  sed -i "s/\${DB_HOST}/$DB_HOST/g" $1
-  sed -i "s/\${DB_NAME}/$DB_NAME/g" $1
-  sed -i "s/\${MESSAGE_SIZE_LIMIT}/$MESSAGE_SIZE_LIMIT/g" $1
-}
-
-# ignores empty results
-shopt -s nullglob
-
 # overwrite the config by the default configuration
-for i in $DEFAULTCONF/*.cf ; do
+for i in $POSTFIXDEFAULTCONF/*.cf ; do
   cp "$i" "$POSTFIXCONF"
 done
 
 # finally overwrite all defaults with the user specific options
-for i in ${USERCONF}/*.cf ; do
+for i in ${POSTFIXUSERCONF}/*.cf ; do
   cp "$i" "$POSTFIXCONF"
 done
 
@@ -62,6 +66,51 @@ fi
 
 ###### END POSTFIX ######
 
+###### DOVECOT ######
+# TODO as mentioned in Dockerfile, we have to change the permissions, which is
+# not so nice after all
+# TODO is it sufficient to do this in the Dockerfile?... anyway
+chmod -R g+w /var/vmail
 
+# create the directory containing the actual dovecot conf located at /dovecot_conf
+# if it already exists ignore it already exists remove it
+if [ -d "$DOVECOTCONF" ]; then
+  rm -rf "$DOVECOTCONF"
+fi
+
+# copy the dovecot configuration
+cp -R /etc/dovecot "$DOVECOTCONF"
+
+# overwrite the config by the default configuration
+for i in $DOVECOTDEFAULTCONF/*.{conf,ext} ; do
+  cp "$i" "$DOVECOTCONF"
+done
+
+# ... also for the subdir conf.d I'm to lazy to merge these things into one loop
+for i in $DOVECOTDEFAULTCONF/conf.d/*.conf ; do
+  cp "$i" "$DOVECOTCONF/conf.d"
+done
+
+# finally overwrite all defaults with the user specific options
+for i in ${DOVECOTUSERCONF}/*.{conf,ext} ; do
+  cp "$i" "$DOVECOTCONF"
+done
+
+# again for the subdir
+for i in ${DOVECOTUSERCONF}/conf.d/*.conf ; do
+  cp "$i" "$DOVECOTCONF/conf.d"
+done
+
+# replace the placeholders for each cf file
+for i in $DOVECOTCONF/*.{conf,ext} ; do
+  repl $i
+done
+
+# ... subdir
+for i in $DOVECOTCONF/conf.d/*.conf ; do
+  repl $i
+done
+
+###### END DOVECOT ######
 
 tail -f /etc/passwd

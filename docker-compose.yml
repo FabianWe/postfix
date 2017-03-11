@@ -16,7 +16,9 @@ postfix:
     - mariadb:mysql
   volumes:
       - ./postconf:/postconf
+      - ./doveconf:/doveconf
       - ./certs:/certs
+      - ./vmail:/var/vmail
   #   - ./mail.crt:/mail.crt
   #   - ./mail.key:/mail.key
   #   #- ./postfix:/etc/postfix

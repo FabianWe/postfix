@@ -6,6 +6,8 @@ A docker container for using postfix with dovecot and spamassassin.
 This docker image installs postfix, dovecot and spamassassin and starts the with a default configuration that should be sound (no promises here).
 Its configuration follows roughly the wonderful [ISPmail guide for Debian Jessie](https://workaround.org/ispmail/jessie) but with some notable changes.
 
+Note that this image is not following the typical style that only one service should run in a container. I personally think that it's the best idea to bundle everything for the mailserver in one image. IMO postfix, dovecot and spamassassin belong together and should run together.
+
 * We don't use debian jessie but Ubuntu (currently 16.04)
 * For password encryption we use SHA-512 insteand of SHA-256
 * No installation of a database on this system, link a mqsql container (such as mariadb)
@@ -35,4 +37,3 @@ The image is based on a mysql database you link to your container. You don't hav
  - ${MESSAGE_SIZE_LIMIT} gets replaced by the maximal size of a message postfix accepts in byte, defaults to 5000000 (5MB)
 
 If you use my mysql proposal you only have to set the environment variable DB_PASSWORD, everything als is not required.
-
