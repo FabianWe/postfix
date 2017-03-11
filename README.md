@@ -17,12 +17,12 @@ The aim is to provide you with an easy to install mail server that simply works 
 You should take a look at the example [docker-compose.yml](./docker-compose.yml) in this repository. It contains the most basic setup. The first thing you see in this file is the database (mariadb:). This is used as our mysql database to store all the stuff required for authentication. We create a volume for the data and also another volume *./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d*. So locally we need to create a directory *docker-entrypoint-initdb.d*. This directory contains a collection of sql scripts that will be executed when starting the database. In it you should add a file to initialize the mysql database. Luckily you don't have to write it yourself, it can be found in this repository: [mail.sql](./mail.sql). So just add the file to *docker-entrypoint-initdb.d* and it will create the database with all required tables for you.
 
 ## Configure Postfix
-The image ships some reasonable (I hope so) configuration files, you can find them in the [default_conf](./default_conf) directory. In order to change some settings you can create a *postconf* directory and mount it in the container at */postconf*. So create your own configuration files here. So to change the default configuration copy a default file and change some lines. All those files weill be included in the postfix configuration dir (the one that is usually found at /etc/postfix).
+The image ships some reasonable (I hope so) configuration files, you can find them in the [default_conf/postfix](./default_conf/postfix) directory. In order to change some settings you can create a *postconf* directory and mount it in the container at */postconf*. So create your own configuration files here. So to change the default configuration copy a default file and change some lines. All those files weill be included in the postfix configuration dir (the one that is usually found at /etc/postfix).
 
 The configuration works as follows:
 
  1. Take all the default configuration files from /etc/postfix
- 2. Overwrite those settings with the config files in [default_conf](./default_conf) (all files ending in *.cf)
+ 2. Overwrite those settings with the config files in [default_conf/postfix](./default_conf/postfix) (all files ending in *.cf)
  3. Overwrite those settings with the files specified in */postconf* (the directory you mounted in the container)
 
 ### Taking into account database information
@@ -32,6 +32,7 @@ The image is based on a mysql database you link to your container. You don't hav
  - ${DB_PASSWORD} gets replaced by your password, it defaults to *PASSWORD* but of course that is not very useful. Set environment variable DB_PASSWORD
  - ${DB_HOST} gets replaced by the host, this should be the link name of the mysql image, defaults to *mysql*. Set environment variable DB_HOST
  - ${DB_NAME} gets replaced by the name of the database, defaults to *mailserver*. Set environment variable DB_Name
- - ${MESSAGE_SIZE_LIMIT} gets replaced by the maximal size of a message postfix accepts in byte, defaults to 6000000 (~ 6MB)
+ - ${MESSAGE_SIZE_LIMIT} gets replaced by the maximal size of a message postfix accepts in byte, defaults to 5000000 (5MB)
 
 If you use my mysql proposal you only have to set the environment variable DB_PASSWORD, everything als is not required.
+
