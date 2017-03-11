@@ -3,11 +3,11 @@
 # ignores empty results
 shopt -s nullglob
 
-POSTFIXCONF="/postfix_conf"
+POSTFIXCONF="/etc/postfix"
 POSTFIXUSERCONF="/postconf"
 POSTFIXDEFAULTCONF="/default_conf/postfix"
 
-DOVECOTCONF="/dovecot_conf"
+DOVECOTCONF="/etc/dovecot"
 DOVECOTUSERCONF="/doveconf"
 DOVECOTDEFAULTCONF="/default_conf/dovecot"
 
@@ -28,15 +28,6 @@ function repl {
 }
 
 ###### POSTFIX ######
-
-# create the directory containing the actual postfix conf located at /postfix_conf
-# if it already exists ignore it already exists remove it
-if [ -d "$POSTFIXCONF" ]; then
-  rm -rf "$POSTFIXCONF"
-fi
-
-# copy the postfix configuration
-cp -R /etc/postfix "$POSTFIXCONF"
 
 # overwrite the config by the default configuration
 for i in $POSTFIXDEFAULTCONF/*.cf ; do
@@ -72,15 +63,6 @@ fi
 # TODO is it sufficient to do this in the Dockerfile?... anyway
 chmod -R g+w /var/vmail
 
-# create the directory containing the actual dovecot conf located at /dovecot_conf
-# if it already exists ignore it already exists remove it
-if [ -d "$DOVECOTCONF" ]; then
-  rm -rf "$DOVECOTCONF"
-fi
-
-# copy the dovecot configuration
-cp -R /etc/dovecot "$DOVECOTCONF"
-
 # overwrite the config by the default configuration
 for i in $DOVECOTDEFAULTCONF/*.{conf,ext} ; do
   cp "$i" "$DOVECOTCONF"
@@ -110,6 +92,10 @@ done
 for i in $DOVECOTCONF/conf.d/*.conf ; do
   repl $i
 done
+
+# change permission of database files
+chown root:root "$DOVECOTCONF/dovecot-sql.conf.ext"
+chmod go= "$DOVECOTCONF/dovecot-sql.conf.ext"
 
 ###### END DOVECOT ######
 
