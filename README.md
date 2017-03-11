@@ -25,6 +25,9 @@ The configuration works as follows:
 ### Taking into account database information
 The image is based on a mysql database you link to your container. You don't have to copy your mysql information in every config file, the entrypoint script will replace all occurrences of the following variables from your config file with some environment variable:
 
- - ${DB_USER} gets replaced by the specified database user, if the environment variable DB_USER  is not set root is assumed
- - ${DB_PASSWORD} gets replaced by your password, it defaults to PASSWORD but of course that is not very useful.
- - The database host is always mysql, the database name is always mailserver, so they don't get replaced and you can use them directly.
+ - ${DB_USER} gets replaced by the specified database user, defaults to *root*. Set environment variable DB_USER
+ - ${DB_PASSWORD} gets replaced by your password, it defaults to *PASSWORD* but of course that is not very useful. Set environment variable DB_PASSWORD
+ - ${DB_HOST} gets replaced by the host, this should be the link name of the mysql image, defaults to *mysql*. Set environment variable DB_HOST
+ - ${DB_NAME} gets replaced by the name of the database, defaults to *mailserver*. Set environment variable DB_Name
+
+If you use my mysql proposal you only have to set the environment variable DB_PASSWORD, everything als is not required.

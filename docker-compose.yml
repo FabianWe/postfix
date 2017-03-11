@@ -9,7 +9,6 @@ mariadb:
 postfix:
   image: fabianwe/postfix
   environment:
-  - DB_USER=root
   - DB_PASSWORD=PASSWORD
   links:
     - mariadb:mysql
