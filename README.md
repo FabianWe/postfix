@@ -13,6 +13,9 @@ Its configuration follows roughly the wonderful [ISPmail guide for Debian Jessie
 
 The aim is to provide you with an easy to install mail server that simply works but leaves you free to extend it until it fits your needs.
 
+## Getting started
+You should take a look at the example [docker-compose.yml](./docker-compose.yml) in this repository. It contains the most basic setup. The first thing you see in this file is the database (mariadb:). This is used as our mysql database to store all the stuff required for authentication. We create a volume for the data and also another volume *./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d*. So locally we need to create a directory *docker-entrypoint-initdb.d*. This directory contains a collection of sql scripts that will be executed when starting the database. In it you should add a file to initialize the mysql database. Luckily you don't have to write it yourself, it can be found in this repository: [mail.sql](./mail.sql). So just add the file to *docker-entrypoint-initdb.d* and it will create the database with all required tables for you.
+
 ## Configure Postfix
 The image ships some reasonable (I hope so) configuration files, you can find them in the [default_conf](./default_conf) directory. In order to change some settings you can create a *postconf* directory and mount it in the container at */postconf*. So create your own configuration files here. So to change the default configuration copy a default file and change some lines. All those files weill be included in the postfix configuration dir (the one that is usually found at /etc/postfix).
 
@@ -31,3 +34,4 @@ The image is based on a mysql database you link to your container. You don't hav
  - ${DB_NAME} gets replaced by the name of the database, defaults to *mailserver*. Set environment variable DB_Name
 
 If you use my mysql proposal you only have to set the environment variable DB_PASSWORD, everything als is not required.
+
