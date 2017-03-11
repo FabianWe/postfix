@@ -9,6 +9,7 @@ DEFAULTCONF="/default_conf"
 : ${DB_PASSWORD:=PASSWORD}
 : ${DB_HOST:=mysql}
 : ${DB_NAME:=mailserver}
+: ${MESSAGE_SIZE_LIMIT:=6000000}
 
 ###### POSTFIX ######
 
@@ -27,6 +28,7 @@ function repl {
   sed -i "s/\${DB_PASSWORD}/$DB_PASSWORD/g" $1
   sed -i "s/\${DB_HOST}/$DB_HOST/g" $1
   sed -i "s/\${DB_NAME}/$DB_NAME/g" $1
+  sed -i "s/\${MESSAGE_SIZE_LIMIT}/$MESSAGE_SIZE_LIMIT/g" $1
 }
 
 # ignores empty results
@@ -57,7 +59,6 @@ else
   # TODO is this ok???
   echo $MAIL_HOSTNAME > /etc/mailname
 fi
-
 
 ###### END POSTFIX ######
 

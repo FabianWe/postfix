@@ -32,6 +32,6 @@ The image is based on a mysql database you link to your container. You don't hav
  - ${DB_PASSWORD} gets replaced by your password, it defaults to *PASSWORD* but of course that is not very useful. Set environment variable DB_PASSWORD
  - ${DB_HOST} gets replaced by the host, this should be the link name of the mysql image, defaults to *mysql*. Set environment variable DB_HOST
  - ${DB_NAME} gets replaced by the name of the database, defaults to *mailserver*. Set environment variable DB_Name
+ - ${MESSAGE_SIZE_LIMIT} gets replaced by the maximal size of a message postfix accepts in byte, defaults to 5000000 (5MB)
 
 If you use my mysql proposal you only have to set the environment variable DB_PASSWORD, everything als is not required.
-

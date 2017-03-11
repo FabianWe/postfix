@@ -11,6 +11,7 @@ postfix:
   environment:
   - DB_PASSWORD=PASSWORD
   - MAIL_HOSTNAME=example.org
+  - MESSAGE_SIZE_LIMIT=5000000
   links:
     - mariadb:mysql
   volumes:
