@@ -16,11 +16,14 @@ RUN apt-get update \
   spamassassin \
   spamass-milter
 
-# create a directory that stores the configuration (.cf files) of the user
+# directory that stores the configuration (.cf files) of the user
 # from this directory we copy the configuration files to overwrite the
 # postfix default config
 VOLUME /postconf
 COPY default_conf /default_conf
+
+# directory for storing the ssl certificate and key
+VOLUME /certs
 
 # Copy entry script
 COPY docker_entrypoint.sh /
