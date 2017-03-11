@@ -1,0 +1,5 @@
+user = ${DB_USER}
+password = ${DB_PASSWORD}
+hosts = mysql
+dbname = mailserver
+query = SELECT destination FROM virtual_aliases WHERE source='%s'

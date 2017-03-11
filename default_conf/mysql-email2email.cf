@@ -1,0 +1,5 @@
+user = ${DB_USER}
+password = ${DB_PASSWORD}
+hosts = mysql
+dbname = mailserver
+query = SELECT email FROM virtual_users WHERE email='%s'
