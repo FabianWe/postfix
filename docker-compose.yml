@@ -10,10 +10,12 @@ postfix:
   image: fabianwe/postfix
   environment:
   - DB_PASSWORD=PASSWORD
+  - MAIL_HOSTNAME=example.org
   links:
     - mariadb:mysql
   volumes:
       - ./postconf:/postconf
+      - ./certs:/certs
   #   - ./mail.crt:/mail.crt
   #   - ./mail.key:/mail.key
   #   #- ./postfix:/etc/postfix

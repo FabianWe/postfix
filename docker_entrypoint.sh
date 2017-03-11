@@ -4,12 +4,13 @@ POSTFIXCONF="/postfix_conf"
 USERCONF="/postconf"
 DEFAULTCONF="/default_conf"
 
-
 # get some environment variables and set defaults if they don't exist
 : ${DB_USER:=root}
 : ${DB_PASSWORD:=PASSWORD}
 : ${DB_HOST:=mysql}
 : ${DB_NAME:=mailserver}
+
+###### POSTFIX ######
 
 # create the directory containing the actual postfix conf located at /postfix_conf
 # if it already exists ignore it already exists remove it
@@ -45,5 +46,21 @@ done
 for i in $POSTFIXCONF/*.cf ; do
   repl $i
 done
+
+# configure the postfix main.cf file
+# first figure out if the HOSTNAME variable is set, if yes use the hostname
+if [ -z ${MAIL_HOSTNAME+x} ]; then
+  echo "WARNING: MAIL_HOSTNAME is not set, not changing the configuration"
+else
+  sed -i "s/myhostname =.*/myhostname = $MAIL_HOSTNAME/g" "$POSTFIXCONF/main.cf"
+  # edit /etc/mailname
+  # TODO is this ok???
+  echo $MAIL_HOSTNAME > /etc/mailname
+fi
+
+
+###### END POSTFIX ######
+
+
 
 tail -f /etc/passwd
