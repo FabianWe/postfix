@@ -18,6 +18,14 @@ DOVECOTDEFAULTCONF="/default_conf/dovecot"
 : ${DB_NAME:=mailserver}
 : ${MESSAGE_SIZE_LIMIT:=6000000}
 
+# TODO this is somehow a dirty hack, but postfix can't access the host mysql inside the container,
+# it is very much isolated from the rest...
+# see https://github.com/hardware/mailserver/issues/27
+# However the "trick" provides there doesn't work for dovecot...
+# So simply replace DB_HOST by the ip!
+# so we search hosts for the line containing mysql (or whatever DB_HOST is)
+DB_HOST=$(python3 /db_ip.py "$DB_HOST")
+
 # function to replace the placeholders in the config files, i.e. ${...}
 function repl {
   sed -i "s/\${DB_USER}/$DB_USER/g" $1
@@ -31,6 +39,9 @@ function repl {
 }
 
 ###### POSTFIX ######
+
+# see http://serverfault.com/questions/655116/postfix-fails-to-send-mail-with-fatal-unknown-service-smtp-tcp
+cp /etc/services /var/spool/postfix/etc/
 
 # overwrite the config by the default configuration
 for i in $POSTFIXDEFAULTCONF/*.cf ; do
@@ -64,7 +75,7 @@ fi
 # TODO as mentioned in Dockerfile, we have to change the permissions, which is
 # not so nice after all
 # TODO is it sufficient to do this in the Dockerfile?... anyway
-chmod -R g+w /var/vmail
+# chmod -R g+w /var/vmail
 
 # overwrite the config by the default configuration
 for i in $DOVECOTDEFAULTCONF/*.{conf,ext} ; do
@@ -116,6 +127,11 @@ sievec "$DOVECOTCONF/sieve-after/spam-to-folder.sieve"
 
 ###### END SPAMASSASSIN ######
 
+# set rights on /var/vmail
+chown -R vmail.vmail /var/vmail
+# set rights on /etc/dovecot/sieve-after/: vmail must be able to right there
+chown -R vmail.vmail /etc/dovecot/sieve-after/
+
 # start all services
 # just to be sure run newaliases
 newaliases
@@ -127,10 +143,5 @@ postfix start
 
 # TODO only required for mailadmin
 printf "[mysql]\nhost = $DB_HOST\ndb = $DB_NAME\nuser = $DB_USER\npassword = $DB_PASSWORD\n" > /mailadmin/.config
-
-# TODO this is somehow a dirty hack, but postfix can't access the host mysql inside the container,
-# it is very much isolated from the rest...
-# see https://github.com/hardware/mailserver/issues/27
-# so we search hosts for the line containing mysql and add the line to /var/spool/postfix/etc/hosts
 
 tail -f /etc/passwd

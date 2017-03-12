@@ -55,3 +55,7 @@ compatibility_level = 2
 smtpd_milters = unix:spamass/spamass.sock
 milter_connect_macros = i j {daemon_name} v {if_name} _
 message_size_limit = ${MESSAGE_SIZE_LIMIT}
+
+# Look at this, it is set to a rather small value (default 5 days, adjust as you like)
+bounce_queue_lifetime=2h
+maximal_queue_lifetime=2h
