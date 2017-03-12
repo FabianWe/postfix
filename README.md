@@ -46,3 +46,8 @@ The image is based on a mysql database you link to your container. You don't hav
 Note that we actually don't replace the DB_HOST with the content of this variable but the IP of the linked database. Otherwise postfix and dovecot have problems accessing the database.
 
 If you use my mysql proposal you only have to set the environment variable DB_PASSWORD, everything als is not required.
+
+# Add Entries
+Before you can start sending mails you have to fill your database with some content. As I said it is up to you how you manage this stuff, simply look at the [mail.sql](./mail.sql) for the database schema. But don't get frustrated if you don't know how to set something up, I've included a very basic tool for doing so. It is a simple textual user interface (and it looks even worse in this docker image, all my "nice" separators are displayed as question marks!). Anyway, I guess it can help you to start. Simply run it with `docker-compose exec postfix ./mailadmin.sh` if you use compoase or `docker exec -ti <POSTFIX_CONTAINER> ./mailadmin.sh` otherwise.
+The usage should be straight forward, first create a virtual domain (e.g. example.org) then start adding users. It should be noted that you don't have to create a user if you want the account to be the alias of another account.
+More about different styles of aliases and some tips can be found [here](https://workaround.org/ispmail/jessie/postfix-mysql) (Catch-all aliases).

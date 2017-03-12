@@ -55,6 +55,8 @@ RUN adduser spamass-milter debian-spamd
 # Copy entry script
 COPY docker_entrypoint.sh /
 RUN chmod +x /docker_entrypoint.sh
+COPY mailadmin.sh /
+RUN chmod +x /mailadmin.sh
 
 # TODO: Remove this dirty fix if possible... strip and split don't work,
 # matching an IP with sed oder grep is not so nice, so this python script
@@ -69,5 +71,7 @@ COPY db_ip.py /
 # maybe rsyslog can't write them becuase the directory has
 # the wrong permissions?
 # VOLUME /var/log
+
+EXPOSE 25 587 143 993 110 995 4190
 
 CMD /docker_entrypoint.sh

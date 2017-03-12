@@ -21,3 +21,11 @@ postfix:
       # - ./log:/var/log
       # - ./postfix_spool:/var/spool/postfix
       # TODO make the spool directory a volume too
+  ports:
+    - "25:25"
+    - "587:587"
+    - "143:143"
+    - "993:993"
+    - "110:110"
+    - "995:995"
+    - "4190:4190"
