@@ -19,8 +19,6 @@ postfix:
       - ./doveconf:/doveconf
       - ./certs:/certs
       - ./vmail:/var/vmail
-  #   - ./mail.crt:/mail.crt
-  #   - ./mail.key:/mail.key
-  #   #- ./postfix:/etc/postfix
-  #   #- ./dovecot:/etc/dovecot
-  #   - ./vmail:/var/vmail
+      # - ./log:/var/log
+      # - ./postfix_spool:/var/spool/postfix
+      # TODO make the spool directory a volume too

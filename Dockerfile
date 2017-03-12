@@ -8,6 +8,7 @@ RUN apt-get update \
   &&  echo postfix postfix/mailname string temporary.example.com | debconf-set-selections \
   && apt-get install -y \
   rsyslog \
+  supervisor \
   postfix \
   postfix-mysql \
   dovecot-mysql \
@@ -59,5 +60,14 @@ RUN chmod +x /docker_entrypoint.sh
 # matching an IP with sed oder grep is not so nice, so this python script
 # See Dockerfile for details why I have to extract the ip from DB_HOST
 COPY db_ip.py /
+
+# some last volumes... the postfix spool (for example bounced mails)
+# TODO Mr. J: Doesn't work
+# VOLUME /var/spool/postfix
+# log dir, in order to keep all log files
+# TODO same here... no log files get created...
+# maybe rsyslog can't write them becuase the directory has
+# the wrong permissions?
+# VOLUME /var/log
 
 CMD /docker_entrypoint.sh

@@ -132,16 +132,26 @@ chown -R vmail.vmail /var/vmail
 # set rights on /etc/dovecot/sieve-after/: vmail must be able to right there
 chown -R vmail.vmail /etc/dovecot/sieve-after/
 
+# copy supervisord config
+cp /default_conf/supervisord.conf /etc/supervisor/conf.d/postfix.conf
+
 # start all services
-# just to be sure run newaliases
-newaliases
-service rsyslog start
-service dovecot start
-service spamassassin start
-service spamass-milter start
-postfix start
+# service rsyslog start
+# service dovecot start
+# service spamassassin start
+# service spamass-milter start
+# postfix start
 
 # TODO only required for mailadmin
 printf "[mysql]\nhost = $DB_HOST\ndb = $DB_NAME\nuser = $DB_USER\npassword = $DB_PASSWORD\n" > /mailadmin/.config
 
-tail -f /etc/passwd
+supervisord -c /etc/supervisor/conf.d/postfix.conf
+
+# the log files should be created by rsyslog s.t. they have the correct
+# permissions... however this make take some time, so before
+# we start tail we wait a bit
+if [ ! -f /var/log/mail.log ]; then
+  sleep 5
+fi
+
+tail -f /var/log/mail.log
