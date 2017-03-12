@@ -5,13 +5,13 @@
 
 import sys
 db_host = sys.argv[1]
-
+ip_chars = set('0123456789.')
 f = open('/etc/hosts', 'r')
 for line in f:
     if ' ' + db_host in line or '\t' + db_host in line:
         # find first charachter that is not a number or a point
         for i, c in enumerate(line):
-            if c not in '0123456789.':
+            if c not in ip_chars:
                 print(line[:i])
                 f.close()
                 sys.exit()

@@ -16,7 +16,6 @@ DOVECOTDEFAULTCONF="/default_conf/dovecot"
 : ${DB_PASSWORD:=PASSWORD}
 : ${DB_HOST:=mysql}
 : ${DB_NAME:=mailserver}
-: ${MESSAGE_SIZE_LIMIT:=6000000}
 
 # TODO this is somehow a dirty hack, but postfix can't access the host mysql inside the container,
 # it is very much isolated from the rest...
@@ -32,7 +31,6 @@ function repl {
   sed -i "s/\${DB_PASSWORD}/$DB_PASSWORD/g" $1
   sed -i "s/\${DB_HOST}/$DB_HOST/g" $1
   sed -i "s/\${DB_NAME}/$DB_NAME/g" $1
-  sed -i "s/\${MESSAGE_SIZE_LIMIT}/$MESSAGE_SIZE_LIMIT/g" $1
   if [ ! -z ${MAIL_HOSTNAME+x} ]; then
     sed -i "s/\${MAIL_HOSTNAME}/$MAIL_HOSTNAME/g" $1
   fi
@@ -48,7 +46,7 @@ for i in $POSTFIXDEFAULTCONF/*.cf ; do
   cp "$i" "$POSTFIXCONF"
 done
 
-# finally overwrite all defaults with the user specific options
+# overwrite all defaults with the user specific options
 for i in ${POSTFIXUSERCONF}/*.cf ; do
   cp "$i" "$POSTFIXCONF"
 done
@@ -57,6 +55,15 @@ done
 for i in $POSTFIXCONF/*.cf ; do
   repl $i
 done
+
+# finally the last configuration step: postconf!
+if [ -f "$POSTFIXUSERCONF/postconf" ]; then
+  while IFS= read -r line; do
+    if [ ! -z "$line" ]; then
+      postconf "$line"
+    fi
+  done < "$POSTFIXUSERCONF/postconf"
+fi
 
 # configure the postfix main.cf file
 # first figure out if the HOSTNAME variable is set, if yes use the hostname
@@ -68,6 +75,7 @@ else
   # TODO is this ok???
   echo $MAIL_HOSTNAME > /etc/mailname
 fi
+
 
 ###### END POSTFIX ######
 
