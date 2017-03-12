@@ -28,7 +28,7 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 # information on enabling SSL in the smtp client.
 
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
-myhostname = localhost
+myhostname = ${MAIL_HOSTNAME}
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = /etc/mailname
@@ -41,9 +41,9 @@ inet_interfaces = all
 inet_protocols = all
 smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3
 
-virtual_mailbox_domains = mysql:/postfix_conf/mysql-virtual-mailbox-domains.cf
-virtual_mailbox_maps = mysql:/postfix_conf/mysql-virtual-mailbox-maps.cf
-virtual_alias_maps = mysql:/postfix_conf/mysql-virtual-alias-maps.cf,mysql:/postfix_conf/mysql-email2email.cf
+virtual_mailbox_domains = mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+virtual_mailbox_maps = mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+virtual_alias_maps = mysql:/etc/postfix/mysql-virtual-alias-maps.cf,mysql:/etc/postfix/mysql-email2email.cf
 virtual_transport = lmtp:unix:private/dovecot-lmtp
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth

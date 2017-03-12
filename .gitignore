@@ -1,2 +1,4 @@
-postconf
-certs
+postconf/
+certs/
+mariadb/
+docker-entrypoint-initdb.d/

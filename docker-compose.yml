@@ -10,7 +10,7 @@ postfix:
   image: fabianwe/postfix
   environment:
   - DB_PASSWORD=PASSWORD
-  - MAIL_HOSTNAME=example.org
+  - MAIL_HOSTNAME=localhost.de
   - MESSAGE_SIZE_LIMIT=1000000
   links:
     - mariadb:mysql
