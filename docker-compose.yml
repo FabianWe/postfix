@@ -1,31 +1,44 @@
-mariadb:
-  image: mariadb
-  volumes:
-    - ./mariadb:/var/lib/mysql
-    - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-  environment:
-    - MYSQL_ROOT_PASSWORD=PASSWORD
+version: "2"
 
-postfix:
-  image: fabianwe/postfix
-  environment:
-  - DB_PASSWORD=PASSWORD
-  - MAIL_HOSTNAME=localhost.de
-  links:
-    - mariadb:mysql
-  volumes:
-      - ./postconf:/postconf
-      - ./doveconf:/doveconf
-      - ./certs:/certs
-      - ./vmail:/var/vmail
-      # - ./log:/var/log
-      # - ./postfix_spool:/var/spool/postfix
-      # TODO make the spool directory a volume too
-  ports:
-    - "25:25"
-    - "587:587"
-    - "143:143"
-    - "993:993"
-    - "110:110"
-    - "995:995"
-    - "4190:4190"
+services:
+  mariadb:
+    image: mariadb
+    volumes:
+      - ./mariadb:/var/lib/mysql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=PASSWORD
+    networks:
+      mail-net:
+        aliases:
+          - mysql
+
+  postfix:
+    image: fabianwe/postfix
+    environment:
+    - DB_PASSWORD=PASSWORD
+    - MAIL_HOSTNAME=localhost.de
+    # links:
+    #   - mariadb:mysql
+    networks:
+      - mail-net
+    volumes:
+        - ./postconf:/postconf
+        - ./doveconf:/doveconf
+        - ./certs:/certs
+        - ./vmail:/var/vmail
+        # - ./log:/var/log
+        # - ./postfix_spool:/var/spool/postfix
+        # TODO make the spool directory a volume too
+    ports:
+      - "25:25"
+      - "587:587"
+      - "143:143"
+      - "993:993"
+      - "110:110"
+      - "995:995"
+      - "4190:4190"
+
+networks:
+  mail-net:
+    driver: bridge

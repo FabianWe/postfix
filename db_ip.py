@@ -4,17 +4,11 @@
 # from the DB_HOST inside the container
 
 import sys
-db_host = sys.argv[1]
-ip_chars = set('0123456789.')
-f = open('/etc/hosts', 'r')
-for line in f:
-    if ' ' + db_host in line or '\t' + db_host in line:
-        # find first charachter that is not a number or a point
-        for i, c in enumerate(line):
-            if c not in ip_chars:
-                print(line[:i])
-                f.close()
-                sys.exit()
+import socket
 
-f.close()
-sys.exit(1)
+db_host = sys.argv[1]
+ips = socket.gethostbyname_ex(db_host)[2]
+if not ips:
+    print('No host with name "%s" found, you must specify a database host!' % db_host)
+    sys.exit(1)
+print(ips[0])
