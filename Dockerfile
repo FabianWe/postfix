@@ -19,6 +19,7 @@ RUN apt-get update \
   spamassassin \
   spamass-milter \
   python3 \
+  python3-requests \
   python3-pip \
   python3-mysqldb \
   git
