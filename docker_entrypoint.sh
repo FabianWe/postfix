@@ -76,6 +76,14 @@ else
   echo $MAIL_HOSTNAME > /etc/mailname
 fi
 
+# after the configuration we call postmap on all lines defined in the postmap file
+if [ -f "$POSTFIXUSERCONF/postmap" ]; then
+  while IFS= read -r line; do
+    if [ ! -z "$line" ]; then
+      postmap "$line"
+    fi
+  done < "$POSTFIXUSERCONF/postmap"
+fi
 
 ###### END POSTFIX ######
 
